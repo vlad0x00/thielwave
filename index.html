@@ -10,8 +10,12 @@
 <body>
     Welcome to Thielwave<br><br>
     Thiiiiiiiiiiiieeeeeeeeeeeelwaaaaaaaaaaaaaaveeeeeeeeeeee<br><br>
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/iRleB034EC8?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/HMLguRWAMSc?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <a href="javascript: callPlayer(&quot;Music&quot;,&quot;playVideo&quot;); callPlayer(&quot;Thiel&quot;,&quot;playVideo&quot;)">Start</a> &bull; 
+    <a href="javascript: callPlayer(&quot;Music&quot;,&quot;pauseVideo&quot;); callPlayer(&quot;Thiel&quot;,&quot;pauseVideo&quot;)">Pause</a> &bull; 
+    <a href="javascript: callPlayer(&quot;Music&quot;,&quot;stopVideo&quot;); callPlayer(&quot;Thiel&quot;,&quot;stopVideo&quot;)">Stop</a>
+    <br />
+    <div id="Music"><iframe width="640" height="390" frameborder="0" title="YouTube video player" type="text/html" src="https://www.youtube.com/embed/HMLguRWAMSc?autoplay=1&enablejsapi=1"></iframe></div>
+    <div id="Thiel"><iframe width="640" height="390" frameborder="0" title="YouTube video player" type="text/html" src="https://www.youtube.com/embed/iRleB034EC8?autoplay=1&enablejsapi=1"></iframe></div>
 </body>
 
 </html>
