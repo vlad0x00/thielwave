@@ -11,12 +11,14 @@
 
 <body>
 
-    <a href="javascript: callPlayer(&quot;Music&quot;,&quot;playVideo&quot;); callPlayer(&quot;Thiel&quot;,&quot;playVideo&quot;)">Start</a> &bull; 
-    <a href="javascript: callPlayer(&quot;Music&quot;,&quot;pauseVideo&quot;); callPlayer(&quot;Thiel&quot;,&quot;pauseVideo&quot;)">Pause</a> &bull; 
-    <a href="javascript: callPlayer(&quot;Music&quot;,&quot;stopVideo&quot;); callPlayer(&quot;Thiel&quot;,&quot;stopVideo&quot;)">Stop</a>
-    <br/>
-    <div id="Music"><iframe width="640" height="100" frameborder="0" title="YouTube video player" type="text/html" src="https://www.youtube.com/embed/HMLguRWAMSc?autoplay=1&enablejsapi=1"></iframe></div>
-    <div id="Thiel"><iframe width="640" height="100" frameborder="0" title="YouTube video player" type="text/html" src="https://www.youtube.com/embed/iRleB034EC8?autoplay=1&enablejsapi=1"></iframe></div>
+    <div id="control-buttons">
+        <a href="javascript: callPlayer(&quot;music&quot;,&quot;playVideo&quot;); callPlayer(&quot;thiel&quot;,&quot;playVideo&quot;)">Start</a><br/><br/><a href="javascript: callPlayer(&quot;music&quot;,&quot;pauseVideo&quot;); callPlayer(&quot;thiel&quot;,&quot;pauseVideo&quot;)">Pause</a><br/><br/><a href="javascript: callPlayer(&quot;music&quot;,&quot;stopVideo&quot;); callPlayer(&quot;thiel&quot;,&quot;stopVideo&quot;)">Stop</a>
+    </div>
+
+    <div id="music"><iframe width="640" height="100" frameborder="0" title="YouTube video player" type="text/html" src="https://www.youtube.com/embed/HMLguRWAMSc?autoplay=1&enablejsapi=1"></iframe></div>
+    <div id="thiel"><iframe width="640" height="100" frameborder="0" title="YouTube video player" type="text/html" src="https://www.youtube.com/embed/iRleB034EC8?autoplay=1&enablejsapi=1"></iframe></div>
+
+    <div id="thiel-talking-window"><img id="thiel-talking-img" src="img/thiel.gif"/></div>
 
 </body>
 

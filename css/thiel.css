@@ -1,3 +1,28 @@
 body {
   background-image: url("../img/thielbg.png");
 }
+
+#control-buttons {
+  position: absolute;
+  width: 100%;
+  margin-top: 400px;
+  font-size: 20px;
+  text-align: center;
+}
+
+#thiel-talking-window {
+  width: 100%;
+}
+
+#thiel-talking-img {
+  display: block;
+  margin: auto;
+}
+
+#music {
+  visibility: hidden;
+}
+
+#thiel {
+  visibility: hidden;
+}
