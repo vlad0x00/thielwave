@@ -1,5 +1,5 @@
 start,end,volume,url
-00:06:29,01:15:12,1.0,https://www.youtube.com/watch?v=SO_00POR-Po
-00:00:16,00:50:06,0.75,https://www.youtube.com/watch?v=3Fx5Q8xGU8k
-00:00:02,00:21:42,0.5,https://www.youtube.com/watch?v=gpQHr6-jTLw
-00:01:49,00:47:06,0.9,https://www.youtube.com/watch?v=iRleB034EC8
+00:06:29,01:15:12,100,https://www.youtube.com/embed/SO_00POR-Po
+00:00:16,00:50:06,75,https://www.youtube.com/embed/3Fx5Q8xGU8k
+00:00:02,00:21:42,50,https://www.youtube.com/embed/gpQHr6-jTLw
+00:01:49,00:47:06,90,https://www.youtube.com/embed/iRleB034EC8

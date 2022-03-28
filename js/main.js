@@ -8,6 +8,8 @@ class Video {
     }
 }
 
+Papa = require('papaparse')
+
 function load_videos(url) {
     var videos = [];
     Papa.parse(url, {
@@ -55,14 +57,31 @@ function get_video_at_time(videos, time) {
 
 var talks = load_videos("data/talks.csv");
 var music = load_videos("data/music.csv");
+
+// Print talks and music
+console.log(talks);
+console.log(music);
+
+var talks_total_time = get_total_time(talks);
+var music_total_time = get_total_time(music);
+
+// Print the current talk and music total time
+console.log("Talks total time: " + talks_total_time);
+console.log("Music total time: " + music_total_time);
+
 var timestamp = Date.now();
 var current_talk = get_video_at_time(talks, timestamp % get_total_time(talks));
 var current_music = get_video_at_time(music, timestamp % get_total_time(music));
 
-// In current DOM, modify "thiel" iframe "src" attribute to the url of current_talk
-document.getElementById("thiel").src = current_talk.url;
+// Print the current talk and music
+console.log(current_talk);
+console.log(current_music);
+
+// In current DOM, modify "talk" iframe "src" attribute to the url of current_talk
+document.getElementById("talk").src = current_talk.url;
 
 // In current DOM, modify "music" iframe "src" attribute to the url of current_music
 document.getElementById("music").src = current_music.url;
 
-// In current DOM, set volume of the "thiel" iframe to 0.5
+callPlayer("talk", "setVolume", current_talk.volume);
+callPlayer("music", "setVolume", current_music.volume);
