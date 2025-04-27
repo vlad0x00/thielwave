@@ -6,20 +6,12 @@
     <title>Thielwave</title>
     <link rel="stylesheet" href="css/thiel.css">
     <script src="js/player.js"></script>
-    <script src="js/main_bundled.js"></script>
+    <script src="js/node_modules/papaparse/papaparse.min.js"></script>
+    <script src="js/main.js"></script>
 
 </head>
 
 <body>
-
-    <div id="control-buttons">
-        <a href="javascript: callPlayer(&quot;music&quot;,&quot;playVideo&quot;); callPlayer(&quot;talk&quot;,&quot;playVideo&quot;)">Start</a><br/><br/>
-        <a href="javascript: callPlayer(&quot;music&quot;,&quot;pauseVideo&quot;); callPlayer(&quot;talk&quot;,&quot;pauseVideo&quot;)">Pause</a><br/><br/>
-        <a href="javascript: callPlayer(&quot;music&quot;,&quot;stopVideo&quot;); callPlayer(&quot;talk&quot;,&quot;stopVideo&quot;)">Stop</a>
-    </div>
-
-    <div id="music"><iframe width="640" height="400" frameborder="0" title="Music player" type="text/html" src="https://www.youtube.com/embed/aDZixwlho48?autoplay=1&enablejsapi=1" allow="autoplay"></iframe></div>
-    <div id="talk"><iframe width="640" height="100" frameborder="0" title="Talk player" type="text/html" src="https://www.youtube.com/embed/iRleB034EC8?autoplay=1&enablejsapi=1" allow="autoplay"></iframe></div>
 
     <div id="thiel-talking-window"><img id="thiel-talking-img" src="img/thiel.gif"/></div>
 

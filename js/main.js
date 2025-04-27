@@ -1,87 +1,139 @@
-// A "Video" class with a start timestamp, end timestamp, volume, and URL members.
-class Video {
-    constructor(start, end, volume, url) {
-        this.start = start;
-        this.end = end;
-        this.volume = volume;
-        this.url = url;
-    }
+// Thielwave – fully refreshed main.js (radio-sync version 2)
+// -----------------------------------------------------------
+// 1) Loads music.csv & talks.csv (with header row src,duration)
+// 2) Calculates current track+offset from a shared clock
+// 3) Plays both streams in sync, loops indefinitely
+// 4) Provides helpful console output for debugging
+// -----------------------------------------------------------
+
+/* === CONFIG === */
+// One global “station start” moment (UTC).  Everyone joins relative to this.
+const STATION_START_UTC = new Date('2025-04-27T00:00:00Z');
+// Relative paths to CSVs
+const MUSIC_CSV = 'data/music.csv';
+const TALKS_CSV = 'data/talks.csv';
+// Volume balance (0.0 – 1.0)
+const MUSIC_VOL = 0.4;
+const TALK_VOL  = 1.0;
+
+/* === STATE === */
+let musicTracks = [];   // [{src, duration}]
+let talkTracks  = [];
+let musicAudio  = null; // current <audio> element
+let talkAudio   = null;
+let musicIdx    = 0;    // index inside playlist
+let talkIdx     = 0;
+
+/* === UTILS === */
+const elapsedSeconds = () => Math.floor((Date.now() - STATION_START_UTC.getTime()) / 1000);
+
+function findTrack(tracks, elapsed) {
+  // guard – fall back
+  if (tracks.length === 0) return { index:0, offset:0 };
+  const total = tracks.reduce((s,t)=>s+t.duration,0);
+  let t = elapsed % total;
+  for (let i=0;i<tracks.length;i++) {
+    if (t < tracks[i].duration) return { index:i, offset:t };
+    t -= tracks[i].duration;
+  }
+  return { index:0, offset:0 }; // shouldn’t reach
 }
 
-Papa = require('papaparse')
+function createAudio(src, firstOffset, volume, label) {
+    const requestTime = Date.now();
+    const a = new Audio(encodeURI(src));
+    a.preload = 'auto';
+    a.volume  = volume;
+  
+    a.addEventListener('canplay', () => {
+      // How long the download/decoding actually took
+      const latency = (Date.now() - requestTime) / 1000;
+  
+      // Re-compute the real-time offset right now
+      const trueOffset = firstOffset + latency;
+      const safeSeek   = Math.min(trueOffset, a.duration - 0.25);
+  
+      // One definitive seek, then start
+      a.currentTime = safeSeek;
+      a.play().catch(() => {});      // in case user-gesture needed
+  
+      // Debug – ensure the seek “took”
+      console.log(`[${label}] seek →`, safeSeek.toFixed(2), 'dur', a.duration.toFixed(2));
+    }, { once: true });
+  
+    a.addEventListener('error', () =>
+      console.error(`[${label}] load error`, src)
+    );
+  
+    return a;
+  }
+    
+function playCurrent() {
+  const elapsed = elapsedSeconds();
 
-function load_videos(url) {
-    var videos = [];
-    Papa.parse(url, {
-        download: true,
-        complete: function(results) {
-            // results.data is the parsed data
-            for (var i = 0; i < results.data.length; i++) {
-                var row = results.data[i];
-                if (row.length == 4) {
-                    var start = parseFloat(row[0]);
-                    var end = parseFloat(row[1]);
-                    var volume = parseFloat(row[2]);
-                    var url = row[3];
-                    videos.push(new Video(start, end, volume, url));
-                }
-            }
+  const { index: mi, offset: mo } = findTrack(musicTracks, elapsed);
+  const { index: ti, offset: to } = findTrack(talkTracks,  elapsed);
+
+  musicIdx = mi;
+  talkIdx  = ti;
+
+  musicAudio = createAudio(musicTracks[mi].src, mo, MUSIC_VOL, 'music');
+  talkAudio  = createAudio(talkTracks[ti].src,  to, TALK_VOL,  'talk');
+
+  // When each track ends, schedule next part of playlist
+  musicAudio.addEventListener('ended', () => nextMusic());
+  talkAudio .addEventListener('ended', () => nextTalk());
+
+  const tryPlay = () => {
+    musicAudio.play().catch(()=>{});
+    talkAudio .play().catch(()=>{});
+  };
+
+  // autoplay policies: start immediately, also resume on first user gesture
+  tryPlay();
+  document.addEventListener('click', tryPlay, { once:true });
+
+  console.log('Now playing:', {
+    music: {...musicTracks[mi], offset: mo},
+    talk : {...talkTracks [ti], offset: to}
+  });
+}
+
+function nextMusic() {
+  musicIdx = (musicIdx + 1) % musicTracks.length;
+  musicAudio = createAudio(musicTracks[musicIdx].src, 0, MUSIC_VOL, 'music');
+  musicAudio.addEventListener('ended', nextMusic);
+  musicAudio.play();
+  console.log('Next music →', musicTracks[musicIdx].src);
+}
+
+function nextTalk() {
+  talkIdx = (talkIdx + 1) % talkTracks.length;
+  talkAudio = createAudio(talkTracks[talkIdx].src, 0, TALK_VOL, 'talk');
+  talkAudio.addEventListener('ended', nextTalk);
+  talkAudio.play();
+  console.log('Next talk →', talkTracks[talkIdx].src);
+}
+
+/* === CSV LOADING === */
+function loadCSV(path, targetArr, label) {
+  Papa.parse(path, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: ({ data }) => {
+      data.forEach(r => {
+        if (r.src && r.duration) {
+          targetArr.push({ src: r.src.trim(), duration: parseFloat(r.duration) });
         }
-    });
-    return videos;
+      });
+      console.log(`Loaded ${label}:`, targetArr);
+      if (musicTracks.length && talkTracks.length) playCurrent();
+    },
+    error: err => console.error(`Error loading ${label}:`, err)
+  });
 }
 
-// Get total time of a list of Video objects
-function get_total_time(videos) {
-    var total_time = 0;
-    for (var i = 0; i < videos.length; i++) {
-        var video = videos[i];
-        total_time += video.end - video.start;
-    }
-    return total_time;
-}
-
-// Iterate through a list of Video objects and return the one that overlaps with the given time, if the video durations are accumulated during the iteration.
-function get_video_at_time(videos, time) {
-    var total_time = 0;
-    for (var i = 0; i < videos.length; i++) {
-        var video = videos[i];
-        var duration = video.end - video.start;
-        if (total_time <= time && time < total_time + duration) {
-            return video;
-        }
-        total_time += duration;
-    }
-    return null;
-}
-
-var talks = load_videos("data/talks.csv");
-var music = load_videos("data/music.csv");
-
-// Print talks and music
-console.log(talks);
-console.log(music);
-
-var talks_total_time = get_total_time(talks);
-var music_total_time = get_total_time(music);
-
-// Print the current talk and music total time
-console.log("Talks total time: " + talks_total_time);
-console.log("Music total time: " + music_total_time);
-
-var timestamp = Date.now();
-var current_talk = get_video_at_time(talks, timestamp % get_total_time(talks));
-var current_music = get_video_at_time(music, timestamp % get_total_time(music));
-
-// Print the current talk and music
-console.log(current_talk);
-console.log(current_music);
-
-// In current DOM, modify "talk" iframe "src" attribute to the url of current_talk
-document.getElementById("talk").src = current_talk.url;
-
-// In current DOM, modify "music" iframe "src" attribute to the url of current_music
-document.getElementById("music").src = current_music.url;
-
-callPlayer("talk", "setVolume", current_talk.volume);
-callPlayer("music", "setVolume", current_music.volume);
+// Kick off
+loadCSV(MUSIC_CSV, musicTracks, 'music');
+loadCSV(TALKS_CSV, talkTracks, 'talks');

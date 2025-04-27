@@ -1,5 +1,5 @@
-start,end,volume,url
-00:06:29,01:15:12,100,https://www.youtube.com/embed/SO_00POR-Po
-00:00:16,00:50:06,75,https://www.youtube.com/embed/3Fx5Q8xGU8k
-00:00:02,00:21:42,50,https://www.youtube.com/embed/gpQHr6-jTLw
-00:01:49,00:47:06,90,https://www.youtube.com/embed/iRleB034EC8
+src,duration
+"audio/talks/Why We Stopped Progressing.mp3",4825
+"audio/talks/Peter Thiel's Skeptic Solutions.mp3",2902
+"audio/talks/Peter Thiel on the Triumph of the Counter-Elites.mp3",7863
+"audio/talks/Peter Thiel on The Straussian Moment.mp3",2845
