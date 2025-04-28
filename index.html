@@ -1,20 +1,91 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thielwave – Peter Thiel Radio + Chillhop</title>
+  <style>
+    /* ---- Cosmic gradient background ---- */
+    body {
+      margin: 0; height: 100vh; width: 100vw;
+      background: radial-gradient(circle at 40% 30%, rgba(52,255,212,0.3) 0%, rgba(0,0,0,0.9) 70%),
+                  linear-gradient(120deg, #001220 0%, #003244 50%, #000814 100%);
+      color: #e4e4e4; font-family: "Inter", system-ui, sans-serif;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      overflow:hidden;
+    }
 
-    <title>Thielwave</title>
-    <link rel="stylesheet" href="css/thiel.css">
-    <script src="js/player.js"></script>
-    <script src="js/node_modules/papaparse/papaparse.min.js"></script>
-    <script src="js/main.js"></script>
+    /* subtle animated gif backdrop */
+    .thiel-bg {
+      position: absolute; inset: 0; z-index: 0; opacity: 0.15;
+      background:url('../img/thiel.gif') center/contain no-repeat;
+      mix-blend-mode: screen;
+      pointer-events:none;
+      animation: slowFloat 40s ease-in-out infinite alternate;
+    }
+    @keyframes slowFloat {from{transform:translateY(-2%);} to{transform:translateY(2%);} }
 
+    /* content */
+    .wrapper { z-index: 1; text-align:center; max-width: 90vw; }
+    h1 { font-size: clamp(1.8rem, 4vw, 3rem); letter-spacing:1px; margin:0 0 0.4em; }
+    .now-playing { font-weight:500; margin-bottom:1.2em; line-height:1.4; }
+    .label { opacity:0.6; font-size:0.85em; }
+    .quote { font-style:italic; margin-top:1.5em; opacity:0.85; max-width:60ch; margin-inline:auto; }
+
+    /* small pulse dot */
+    .live { display:inline-block; width:8px;height:8px; border-radius:50%; background:#ff5555; margin-right:6px;
+            animation: liveBlink 1.2s ease-in-out infinite; }
+    @keyframes liveBlink { 0%,100%{opacity:0.2;} 50%{opacity:1;} }
+  </style>
 </head>
-
 <body>
+  <div class="thiel-bg"></div>
 
-    <div id="thiel-talking-window"><img id="thiel-talking-img" src="img/thiel.gif"/></div>
+  <div class="wrapper">
+    <h1><span class="live"></span>Thielwave Radio</h1>
+    <div class="now-playing">
+        <div><span class="label">Music:</span>
+            <a id="music-link" target="_blank"><span id="music-title">—</span></a>
+        </div>
+        <div><span class="label">Talk:</span>
+            <a id="talk-link"  target="_blank"><span id="talk-title">—</span></a>
+        </div>
+    </div>
+    <div class="quote" id="quote">"Every moment in business happens only once."</div>
+  </div>
 
+  <!-- PapaParse & player scripts -->
+  <script src="js/node_modules/papaparse/papaparse.min.js"></script>
+  <script src="js/main.js"></script>
+
+  <!-- UI hooks -->
+  <script>
+    // simple rotating quotes
+    const quotes = [
+      "Every moment in business happens only once.",
+      "Competition is for losers.",
+      "The most contrarian thing of all is not to oppose the crowd but to think for yourself.",
+      "A great company is a conspiracy to change the world.",
+      "If you can identify a delusional popular belief, you can find what lies hidden behind it: the contrarian truth."
+    ];
+    let quoteIdx = 0;
+    function nextQuote(){ quoteIdx = (quoteIdx+1)%quotes.length; document.getElementById('quote').textContent = '"'+quotes[quoteIdx]+'"'; }
+    setInterval(nextQuote, 15000);
+
+    /* -- hook into main.js global callbacks -- */
+    window.updateNowPlaying = function (musicObj, talkObj) {
+        const tidy = s => s.split('/').pop().replace(/\\.mp3$/,'');
+
+        const musicLink = document.getElementById('music-link');
+        const talkLink  = document.getElementById('talk-link');
+
+        musicLink.href = musicObj.link || '#';
+        talkLink .href = talkObj.link || '#';
+
+        document.getElementById('music-title').textContent = tidy(musicObj.src);
+        document.getElementById('talk-title' ).textContent = tidy(talkObj .src);
+    };
+
+  </script>
 </body>
-
 </html>

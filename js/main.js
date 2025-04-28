@@ -93,6 +93,11 @@ function playCurrent() {
   tryPlay();
   document.addEventListener('click', tryPlay, { once:true });
 
+  if (window.updateNowPlaying) {
+    window.updateNowPlaying(musicTracks[musicIdx],
+                            talkTracks [talkIdx ]);
+  }  
+
   console.log('Now playing:', {
     music: {...musicTracks[mi], offset: mo},
     talk : {...talkTracks [ti], offset: to}
@@ -105,6 +110,11 @@ function nextMusic() {
   musicAudio.addEventListener('ended', nextMusic);
   musicAudio.play();
   console.log('Next music →', musicTracks[musicIdx].src);
+
+  if (window.updateNowPlaying) {
+    window.updateNowPlaying(musicTracks[musicIdx],
+                            talkTracks [talkIdx ]);
+  }  
 }
 
 function nextTalk() {
@@ -113,6 +123,11 @@ function nextTalk() {
   talkAudio.addEventListener('ended', nextTalk);
   talkAudio.play();
   console.log('Next talk →', talkTracks[talkIdx].src);
+
+  if (window.updateNowPlaying) {
+    window.updateNowPlaying(musicTracks[musicIdx],
+                            talkTracks [talkIdx ]);
+  }  
 }
 
 /* === CSV LOADING === */
@@ -124,7 +139,11 @@ function loadCSV(path, targetArr, label) {
     complete: ({ data }) => {
       data.forEach(r => {
         if (r.src && r.duration) {
-          targetArr.push({ src: r.src.trim(), duration: parseFloat(r.duration) });
+          targetArr.push({
+            src: r.src.trim(),
+            duration: parseFloat(r.duration),
+            link: (r.link || '').trim()
+          });
         }
       });
       console.log(`Loaded ${label}:`, targetArr);
